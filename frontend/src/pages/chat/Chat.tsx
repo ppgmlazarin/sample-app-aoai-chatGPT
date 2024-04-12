@@ -114,12 +114,20 @@ const Chat = () => {
         }
     }
 
+    const isKANumber = (str: string) => {
+        return /\b(5[4-9]\d{2,4}|[6-9]\d{3,4}|[1-9]\d{4,4}|[1-9]\d{5,5}|[1-9]\d{6,6}|[1-9]\d{7,7}|[1-9]\d{8,8}|9[0-9]\d{3,4}|999[0-9]{2,3}|99999)\b/.test(str);
+    }
+
     let assistantMessage = {} as ChatMessage
     let toolMessage = {} as ChatMessage
     let assistantContent = ""
-
+    let isKA = false;
     const processResultMessage = (resultMessage: ChatMessage, userMessage: ChatMessage, conversationId?: string) => {
         if (resultMessage.role === ASSISTANT) {
+            if (isKANumber(resultMessage.content)) {
+                resultMessage.content = ` [${resultMessage.content.trim()}](https://ppgprod.alembacloud.com/production/Portal.aspx?&TemplateName=LiteKnowledgeSearchResults&BTN_SELECT${resultMessage.content.trim()}=View)`
+                isKA = false;
+            }
             assistantContent += resultMessage.content
             assistantMessage = resultMessage
             assistantMessage.content = assistantContent

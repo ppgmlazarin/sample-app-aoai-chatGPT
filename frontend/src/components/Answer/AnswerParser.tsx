@@ -21,8 +21,41 @@ const enumerateCitations = (citations: Citation[]) => {
     return citations;
 }
 
+const setHyperLink = (answer: string) => {
+    if (answer.includes('KA') && answer.length <= 3) {
+        return answer;
+    }
+
+    if (!answer.includes('KA') && isNaN(+answer)) {
+        return answer;
+    }
+
+    if (!isNaN(+answer) && answer.length < 4) {
+        return answer;
+    }
+
+    if (answer.includes('KA')) {
+        if (isNaN(+answer[2])) {
+            answer = answer.substring(3, answer.length);
+        } else {
+            answer = answer.substring(2, answer.length);
+        }
+    }
+    return `[${answer}](https://ppgprod.alembacloud.com/production/Portal.aspx?&TemplateName=LiteKnowledgeSearchResults&BTN_SELECT${answer}=View)`
+}
+
 export function parseAnswer(answer: AskResponse): ParsedAnswer {
     let answerText = answer.answer;
+
+    answerText = answerText.split(' ').map(e => {
+        return setHyperLink(e);
+    }).join(' ');
+
+    // Replace numbers with markdown hyperlinks
+    // answerText.replace(regex, function(match) {
+    //     return `[${match}](https://ppgprod.alembacloud.com/production/Portal.aspx?&TemplateName=LiteKnowledgeSearchResults&BTN_SELECT${match}=View)`;
+    // });
+
     const citationLinks = answerText.match(/\[(doc\d\d?\d?)]/g);
 
     const lengthDocN = "[doc".length;

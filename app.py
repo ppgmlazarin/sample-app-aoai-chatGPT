@@ -30,6 +30,10 @@ from backend.utils import (
     format_pf_non_streaming_response,
 )
 
+import mimetypes
+mimetypes.add_type('application/javascript', '.js')
+mimetypes.add_type('text/css', '.css')
+
 bp = Blueprint("routes", __name__, static_folder="static", template_folder="static")
 
 # Current minimum Azure OpenAI version supported
@@ -724,7 +728,15 @@ def prepare_model_args(request_body):
     request_messages = request_body.get("messages", [])
     messages = []
     if not SHOULD_USE_DATA:
-        messages = [{"role": "system", "content": AZURE_OPENAI_SYSTEM_MESSAGE}]
+        messages = [
+            {"role": "system", "content": AZURE_OPENAI_SYSTEM_MESSAGE},
+            {"role": "user", "content": "How can I assist a user reset their network account password?"},
+            {"role": "assistant", "content": """'
+            To reset a user's network account password refer to KA 2001 for the proper steps. First, confirm the user via Sailpoint or HRIM in the process defined in Section 1 of the KA. Then set a new temporary network account password for the user in Sailpoint by going to Menu icon -> Manage Access -> Manage Password. You will locate the user's account, select manage, and reset their Active Directory password. User will receive a confirmation email that their password has been reset and by whom. 
+            If the user is on a PPG machine, they can log attempt to log in and they will be prompted to change their temporary password to a permanent password. Consult KA 2001 for the process for users on non-PPG machines if needed. If the temporary reset process does not work for the user, you can also set their permanent password in Active Directory by using the reset function and deselection "User must change password at next log on."
+
+In all cases, have the user attempt to log in again to confirm that the password reset has completed successfully. """},
+        ]
 
     for message in request_messages:
         if message:
