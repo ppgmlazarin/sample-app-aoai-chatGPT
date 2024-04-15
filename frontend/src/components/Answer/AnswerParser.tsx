@@ -51,11 +51,6 @@ export function parseAnswer(answer: AskResponse): ParsedAnswer {
         return setHyperLink(e);
     }).join(' ');
 
-    // Replace numbers with markdown hyperlinks
-    // answerText.replace(regex, function(match) {
-    //     return `[${match}](https://ppgprod.alembacloud.com/production/Portal.aspx?&TemplateName=LiteKnowledgeSearchResults&BTN_SELECT${match}=View)`;
-    // });
-
     const citationLinks = answerText.match(/\[(doc\d\d?\d?)]/g);
 
     const lengthDocN = "[doc".length;
